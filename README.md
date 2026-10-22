@@ -21,6 +21,7 @@ Each episode's finished state has a tag:
   `audit/2026-10-22/security-report.md`.
 - `ep03-healthy`: after the app-health-check skill's report (`audit/2026-10-22.md`) and its fixes (episode 3).
 - `ep04-polished`: after the mobile-web-polish skill's changes for iPhone and iPad (episode 4).
+- `ep05-agent`: with agent access built in (episode 5): Claude can look up orders, add one and change an order's status.
 
 ## Run it on your computer
 
@@ -73,6 +74,12 @@ To start from one episode's version: `git checkout ep01-built` (or another tag a
 - Episode 4 (mobile-web-polish): form fields stay 16px on iPad so Safari doesn't zoom, notch-safe side padding
   (`viewport-fit=cover`), every tap target at least 44px, a shorter sign-in page in phone landscape, and pressed
   states. Measured in Chromium at phone and tablet sizes; not yet tried on a real iPhone.
+- Episode 5 (bring-your-own-agent): the skill said this app is a poor fit for it (2 of 17 routes reachable; the work
+  lives in Server Actions) and recommended building agent access inside the app. Done that way: an MCP endpoint at
+  `/mcp` with four tools (list orders, get an order, add an order, set an order's status; no delete), a consent screen,
+  Settings > Connected assistants with "Take access away", and a log of every assistant call on the System page.
+  Connect from Claude Code on the same computer: `claude mcp add --transport http juniper-catering http://localhost:3456/mcp`,
+  then `/mcp` in Claude Code to sign in and allow it. Run `pnpm build` again after `pnpm install` (a new migration adds tables).
 
 ## Licence
 

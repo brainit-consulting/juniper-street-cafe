@@ -1,16 +1,21 @@
 import { betterAuth } from "better-auth";
 import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { jwt } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+import { cimd } from "@better-auth/cimd";
+import { fetchClientMetadataResource } from "@better-auth/cimd/node";
+import { mcp } from "@better-auth/mcp";
 import { and, count, eq, gt, isNull } from "drizzle-orm";
 import { db } from "./db";
 import { logActivity } from "./activity";
 import { invitation } from "./db/schema"; // relative on purpose: the Better Auth CLI cannot resolve the alias here
 import { user as userTable } from "./db/auth-schema";
 import { ROLES, ADMIN_ROLE, DEFAULT_ROLE } from "./roles";
+import { BASE_URL, MCP_RESOURCE, MCP_SCOPES } from "./mcp-resource"; // relative on purpose, like the imports above
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: BASE_URL,
   database: drizzleAdapter(db, { provider: "sqlite" }),
   emailAndPassword: { enabled: true, minPasswordLength: 10 },
   // Off by default outside production, and the built-in sign-in rule (3 tries per 10
@@ -18,7 +23,11 @@ export const auth = betterAuth({
   // 5 minutes is plenty for a person who mistypes.
   rateLimit: {
     enabled: true,
-    customRules: { "/sign-in/email": { window: 300, max: 10 } },
+    customRules: {
+      "/sign-in/email": { window: 300, max: 10 },
+      "/oauth2/register": { window: 60, max: 5 },
+      "/oauth2/token": { window: 60, max: 30 },
+    },
   },
   // freshAge 0: by default a session older than a day is "not fresh" and the devices
   // list answers 403 for anyone who has been signed in since yesterday. Deleting an
@@ -95,6 +104,24 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    jwt(), // the agent-access plugin signs its access tokens with it
+    mcp({
+      loginPage: "/sign-in",
+      consentPage: "/oauth/consent",
+      resource: MCP_RESOURCE,
+      // Claude registers itself before anybody has signed in; registering creates
+      // a client record, not access. Nothing can be read until a person says Allow.
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
+      scopes: ["openid", "profile", "email", "offline_access", ...MCP_SCOPES],
+      clientRegistrationDefaultScopes: ["openid", "profile", "email"],
+      // Written out on purpose, not derived from MCP_SCOPES.
+      clientRegistrationAllowedScopes: ["offline_access", "orders:read", "orders:write"],
+    }),
+    cimd({
+      fetchClientMetadataResource,
+      metadataProfile: "mcp-2026-07-28",
+    }),
     nextCookies(), // must stay last in the list
   ],
 });

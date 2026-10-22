@@ -15,6 +15,9 @@ export default async function SettingsLayout({ children }: { children: React.Rea
         <Link href="/settings/security" className="flex min-h-11 items-center font-medium active:bg-muted">
           Password and devices
         </Link>
+        <Link href="/settings/connections" className="flex min-h-11 items-center font-medium active:bg-muted">
+          Connected assistants
+        </Link>
         {isOwner && (
           <Link href="/settings/people" className="flex min-h-11 items-center font-medium active:bg-muted">
             People

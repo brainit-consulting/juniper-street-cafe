@@ -6,8 +6,10 @@ import { AuthForm } from "@/components/auth-form";
 
 export const metadata: Metadata = { title: "Sign in" };
 
-export default async function SignInPage() {
-  if (await getSession()) redirect("/");
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ client_id?: string }> }) {
+  // Someone arriving from an assistant keeps this page, so the request is not dropped.
+  const { client_id } = await searchParams;
+  if ((await getSession()) && !client_id) redirect("/");
 
   return (
     <>

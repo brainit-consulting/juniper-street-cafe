@@ -64,3 +64,21 @@ export const activityLog = sqliteTable("activity_log", {
     .notNull()
     .$defaultFn(() => new Date()),
 });
+
+/** Every call an assistant made through /mcp: which tool, what it asked for, and what came back. */
+export const mcpCallLog = sqliteTable("mcp_call_log", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  clientId: text("client_id"),
+  tool: text("tool").notNull(),
+  args: text("args", { mode: "json" }),
+  ok: integer("ok", { mode: "boolean" }).notNull(),
+  durationMs: integer("duration_ms"),
+  rowCount: integer("row_count"),
+  error: text("error"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});

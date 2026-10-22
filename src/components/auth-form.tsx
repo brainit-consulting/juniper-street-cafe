@@ -30,6 +30,8 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       setError(result.error.message ?? "That didn't work. Check what you typed and try again.");
       return;
     }
+    // Signing in for an assistant: the server answers with a redirect to the consent screen.
+    if (result.data && "redirect" in result.data && result.data.redirect && "url" in result.data) return;
     router.push("/");
     router.refresh();
   }

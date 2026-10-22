@@ -1,10 +1,13 @@
-import { and, asc, count, desc, eq, gte, like, lt, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, like, lt, lte, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "./db";
 import { cateringOrder, user } from "./db/schema";
 import { logActivity } from "./activity";
 
 export const ORDER_STATUSES = ["upcoming", "done", "cancelled"] as const;
+/** Who made the change: a person in the app, or an assistant through /mcp. */
+export type Via = "app" | "agent";
+
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 /** What the form sends. Money arrives as dollars typed by a person and is stored as cents. */
@@ -46,6 +49,9 @@ function toRow(input: OrderInput) {
   };
 }
 
+/** Order ids are UUIDs made by the app. */
+export const ID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const withTaker = {
   order: cateringOrder,
   takenByName: user.name,
@@ -71,10 +77,19 @@ export async function listOverdue(today: string) {
     .orderBy(asc(cateringOrder.dueDate), asc(cateringOrder.dueTime));
 }
 
-export async function listOrders(opts: { status?: OrderStatus; search?: string }) {
+export async function listOrders(opts: {
+  status?: OrderStatus;
+  search?: string;
+  /** Due on or after / on or before, YYYY-MM-DD. */
+  from?: string;
+  to?: string;
+  limit?: number;
+}) {
   const search = opts.search?.trim();
   const conditions = [
     opts.status ? eq(cateringOrder.status, opts.status) : undefined,
+    opts.from ? gte(cateringOrder.dueDate, opts.from) : undefined,
+    opts.to ? lte(cateringOrder.dueDate, opts.to) : undefined,
     search
       ? or(
           like(cateringOrder.customerName, `%${search}%`),
@@ -88,10 +103,13 @@ export async function listOrders(opts: { status?: OrderStatus; search?: string }
     .from(cateringOrder)
     .leftJoin(user, eq(cateringOrder.takenBy, user.id))
     .where(conditions.length ? and(...conditions) : undefined)
-    .orderBy(desc(cateringOrder.dueDate), desc(cateringOrder.dueTime));
+    .orderBy(desc(cateringOrder.dueDate), desc(cateringOrder.dueTime))
+    .limit(opts.limit ?? -1); // SQLite: -1 means no limit
 }
 
 export async function getOrder(id: string) {
+  // An id that is not one of ours is "no such order", not a database error.
+  if (!ID_SHAPE.test(id)) return null;
   const [row] = await db
     .select(withTaker)
     .from(cateringOrder)
@@ -101,12 +119,16 @@ export async function getOrder(id: string) {
   return row ?? null;
 }
 
-export async function createOrder(input: OrderInput, takenBy: string, opts: { isExample?: boolean } = {}) {
+export async function createOrder(
+  input: OrderInput,
+  takenBy: string,
+  opts: { isExample?: boolean; via?: Via } = {},
+) {
   const [row] = await db
     .insert(cateringOrder)
     .values({ ...toRow(input), takenBy, isExample: opts.isExample ?? false })
     .returning({ id: cateringOrder.id });
-  await logActivity("order.created", { id: row.id, customer: input.customerName }, takenBy);
+  await logActivity("order.created", { id: row.id, customer: input.customerName, via: opts.via ?? "app" }, takenBy);
   return row.id;
 }
 
@@ -137,13 +159,14 @@ export async function removeExampleOrders(userId: string) {
   return removed.length;
 }
 
-export async function setOrderStatus(id: string, status: OrderStatus, userId: string) {
+export async function setOrderStatus(id: string, status: OrderStatus, userId: string, via: Via = "app") {
+  if (!ID_SHAPE.test(id)) return false;
   const rows = await db
     .update(cateringOrder)
     .set({ status })
     .where(eq(cateringOrder.id, id))
     .returning({ id: cateringOrder.id });
   if (rows.length === 0) return false;
-  await logActivity(`order.${status}`, { id }, userId);
+  await logActivity(`order.${status}`, { id, via }, userId);
   return true;
 }
