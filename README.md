@@ -57,11 +57,10 @@ To start from one episode's version: `git checkout ep01-built` (or another tag a
 - `src/lib/legal.ts` has a blank contact email for the privacy note; the page shows a marker until you fill it in.
 - Everything in it is made up. Don't put real customer data in it before you've checked it yourself.
 
-## Changes after the skill finished
+## Changes by episode
 
-- `data/.gitkeep` so a fresh clone has the database folder. Without it, `pnpm build` stopped with "Cannot open
+- Episode 1 (our fix after the skill finished): `data/.gitkeep` so a fresh clone has the database folder. Without it, `pnpm build` stopped with "Cannot open
   database because the directory does not exist" (found when we tested a fresh clone on 22 October 2026).
-
 - Episode 2 (security-scanner): security headers, a sign-in limit of 10 tries per 5 minutes, and a 10-character
   minimum for new passwords. Trade-off we measured: the app can't tell people apart when nothing sits in front of it,
   so all sign-ins share one counter. Ten wrong tries by anyone locked out every sign-in, the owner's too, for 5
