@@ -1,0 +1,1 @@
+ALTER TABLE `catering_order` ADD `is_example` integer DEFAULT false NOT NULL;

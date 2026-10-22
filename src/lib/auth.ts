@@ -1,0 +1,93 @@
+import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
+import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { nextCookies } from "better-auth/next-js";
+import { and, count, eq, gt, isNull } from "drizzle-orm";
+import { db } from "./db";
+import { logActivity } from "./activity";
+import { invitation } from "./db/schema"; // relative on purpose: the Better Auth CLI cannot resolve the alias here
+import { user as userTable } from "./db/auth-schema";
+import { ROLES, ADMIN_ROLE, DEFAULT_ROLE } from "./roles";
+
+export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
+  database: drizzleAdapter(db, { provider: "sqlite" }),
+  emailAndPassword: { enabled: true },
+  // freshAge 0: by default a session older than a day is "not fresh" and the devices
+  // list answers 403 for anyone who has been signed in since yesterday. Deleting an
+  // account asks for the password instead. Leave this at 0.
+  session: { freshAge: 0 },
+  user: {
+    additionalFields: {
+      role: {
+        type: [...ROLES],
+        required: false,
+        defaultValue: DEFAULT_ROLE,
+        input: false, // the security control: without it a user can set their own role
+      },
+    },
+    // No email sending in this app, so deleting an account is confirmed by the typed
+    // address and the password in the dialog, not by a link.
+    deleteUser: {
+      enabled: true,
+      beforeDelete: async (target) => {
+        const [row] = await db
+          .select({ role: userTable.role })
+          .from(userTable)
+          .where(eq(userTable.id, target.id))
+          .limit(1);
+        if (row?.role === ADMIN_ROLE) {
+          throw new APIError("BAD_REQUEST", {
+            message:
+              "The owner account can't be deleted from the app, because nobody would be left in charge.",
+          });
+        }
+      },
+      // The account is gone by now, so the entry carries the name instead of a link to the person.
+      afterDelete: async (gone) => {
+        await logActivity("member.left", { name: gone.name });
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        // The first account is the owner. After that, only an address with a
+        // pending invitation can create one, and the role comes from the invitation.
+        before: async (user) => {
+          const [row] = await db.select({ n: count() }).from(userTable);
+          if (row.n === 0) return { data: { ...user, role: ADMIN_ROLE } };
+
+          const [invite] = await db
+            .select()
+            .from(invitation)
+            .where(
+              and(
+                eq(invitation.email, user.email.toLowerCase()),
+                isNull(invitation.acceptedAt),
+                gt(invitation.expiresAt, new Date()),
+              ),
+            )
+            .limit(1);
+          if (!invite) {
+            throw new APIError("FORBIDDEN", {
+              message: "Sign-up is closed. Ask the owner to add you.",
+            });
+          }
+          return { data: { ...user, role: invite.role } };
+        },
+        // Once the person exists, their invitation is used up, and it is written down that they joined.
+        after: async (created) => {
+          await db
+            .update(invitation)
+            .set({ acceptedAt: new Date() })
+            .where(and(eq(invitation.email, created.email.toLowerCase()), isNull(invitation.acceptedAt)));
+          await logActivity("member.joined", { name: created.name }, created.id);
+        },
+      },
+    },
+  },
+  plugins: [
+    nextCookies(), // must stay last in the list
+  ],
+});
