@@ -19,6 +19,7 @@ Each episode's finished state has a tag:
 - `ep01-built`: the app as start-an-app left it (episode 1).
 - `ep02-secured`: after the security-scanner skill's report and its two fixes (episode 2). The report is in
   `audit/2026-10-22/security-report.md`.
+- `ep03-healthy`: after the app-health-check skill's report (`audit/2026-10-22.md`) and its fixes (episode 3).
 
 ## Run it on your computer
 
@@ -65,6 +66,9 @@ To start from one episode's version: `git checkout ep01-built` (or another tag a
   minimum for new passwords. Trade-off we measured: the app can't tell people apart when nothing sits in front of it,
   so all sign-ins share one counter. Ten wrong tries by anyone locked out every sign-in, the owner's too, for 5
   minutes. Before putting it online behind a proxy, set Better Auth's `advanced.ipAddress.ipAddressHeaders`.
+- Episode 3 (app-health-check): a half-typed order is kept when the session ends (it used to show "This page
+  couldn't load" and lose the order), an error page, the privacy contact address (made up), and sign-in pages that
+  send a signed-in person home.
 
 ## Licence
 

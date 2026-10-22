@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireUserAction } from "@/lib/auth-guards";
+import { getSession } from "@/lib/auth-guards";
 import {
   ORDER_STATUSES,
   createOrder,
@@ -15,7 +15,11 @@ import {
 export type FormState = {
   errors?: Record<string, string>;
   values?: Record<string, string>;
+  /** The session ended while the form was open. The form keeps what was typed and offers sign-in. */
+  signedOut?: boolean;
 };
+
+const SIGNED_OUT = "You've been signed out. Sign in again, then press Save. What you typed is still here.";
 
 const TEXT_FIELDS = [
   "customerName",
@@ -30,10 +34,16 @@ const TEXT_FIELDS = [
 ] as const;
 
 export async function saveOrder(_prev: FormState, formData: FormData): Promise<FormState> {
-  const session = await requireUserAction();
-
   const raw = Object.fromEntries(TEXT_FIELDS.map((k) => [k, String(formData.get(k) ?? "")]));
   const depositPaid = formData.get("depositPaid") === "on";
+
+  // Signed out is expected (another tab, an expired session), so it comes back as a message
+  // that keeps the typed values. Throwing here would replace the form with an error page.
+  const session = await getSession();
+  if (!session) {
+    return { errors: { form: SIGNED_OUT }, values: { ...raw, depositPaid: depositPaid ? "on" : "" }, signedOut: true };
+  }
+
   const parsed = orderInput.safeParse({ ...raw, depositPaid });
 
   if (!parsed.success) {
@@ -59,10 +69,14 @@ export async function saveOrder(_prev: FormState, formData: FormData): Promise<F
   redirect("/");
 }
 
-export async function changeStatus(id: string, status: OrderStatus) {
-  const session = await requireUserAction();
+export type StatusResult = { error: string };
+
+export async function changeStatus(id: string, status: OrderStatus): Promise<StatusResult> {
+  const session = await getSession();
+  if (!session) return { error: "You've been signed out. Sign in again, then try again." };
   if (!ORDER_STATUSES.includes(status)) throw new Error("Unknown status");
-  await setOrderStatus(id, status, session.user.id);
+  const found = await setOrderStatus(id, status, session.user.id);
+  if (!found) return { error: "That order no longer exists." };
   revalidatePath("/", "layout");
   redirect("/");
 }

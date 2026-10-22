@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth-guards";
 import { AuthForm } from "@/components/auth-form";
 
 export const metadata: Metadata = { title: "Sign in" };
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  if (await getSession()) redirect("/");
+
   return (
     <>
       <h2 className="mb-5 text-2xl">Sign in</h2>

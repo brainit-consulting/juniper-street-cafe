@@ -140,6 +140,13 @@ export function OrderForm({ initial, submitLabel }: { initial: OrderFormValues; 
       </div>
 
       <FieldError message={errors.form} />
+      {state.signedOut && (
+        <p>
+          <a href="/sign-in" target="_blank" rel="noopener" className="font-medium underline underline-offset-4">
+            Sign in (opens in a new tab)
+          </a>
+        </p>
+      )}
       <Button type="submit" size="lg" disabled={pending}>
         {submitLabel}
       </Button>

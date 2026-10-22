@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getSession } from "@/lib/auth-guards";
 
-export default function LegalLayout({ children }: { children: React.ReactNode }) {
+export default async function LegalLayout({ children }: { children: React.ReactNode }) {
+  const signedIn = Boolean(await getSession());
+
   return (
     <main className="mx-auto min-h-[100dvh] w-full max-w-prose px-4 py-12">
       <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Juniper Street Café</p>
@@ -8,8 +11,8 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
         {children}
       </div>
       <p className="mt-12">
-        <Link href="/sign-in" className="underline underline-offset-4">
-          Back to sign in
+        <Link href={signedIn ? "/" : "/sign-in"} className="underline underline-offset-4">
+          {signedIn ? "Back to coming up" : "Back to sign in"}
         </Link>
       </p>
     </main>

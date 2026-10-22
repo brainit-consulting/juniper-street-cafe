@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { and, count, gt, isNull } from "drizzle-orm";
+import { getSession } from "@/lib/auth-guards";
 import { db } from "@/lib/db";
 import { invitation, user } from "@/lib/db/schema";
 import { AuthForm } from "@/components/auth-form";
@@ -12,6 +14,8 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Sign up" };
 
 export default async function SignUpPage() {
+  if (await getSession()) redirect("/");
+
   const [users] = await db.select({ n: count() }).from(user);
   const [waiting] = await db
     .select({ n: count() })

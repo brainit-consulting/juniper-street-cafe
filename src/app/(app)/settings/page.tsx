@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireUser } from "@/lib/auth-guards";
 import { ADMIN_ROLE } from "@/lib/roles";
 import { ProfileNameForm } from "@/components/profile-name-form";
@@ -31,6 +32,14 @@ export default async function YouPage() {
         >
           Download my data
         </a>
+      </section>
+
+      <section>
+        <h2 className="text-2xl">What the order book stores</h2>
+        <p className="mt-2 max-w-prose">What is kept about orders and about you, and who can see it.</p>
+        <Link href="/privacy" className="mt-3 inline-block font-medium underline underline-offset-4">
+          Read what this stores
+        </Link>
       </section>
 
       <section className="border-t border-border pt-10">
