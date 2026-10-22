@@ -53,7 +53,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           name="password"
           type="password"
           autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
-          minLength={8}
+          minLength={mode === "sign-up" ? 10 : undefined}
           required
         />
       </div>

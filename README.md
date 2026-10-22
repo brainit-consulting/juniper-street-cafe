@@ -14,7 +14,11 @@ start where the episodes end.
 - Skills: [brainit-consulting/skills](https://github.com/brainit-consulting/skills), a fork of
   [Leon van Zyl's skills](https://github.com/leonvanzyl/skills)
 
-Each episode's finished state has a tag: `ep01-built` is the app as start-an-app left it.
+Each episode's finished state has a tag:
+
+- `ep01-built`: the app as start-an-app left it (episode 1).
+- `ep02-secured`: after the security-scanner skill's report and its two fixes (episode 2). The report is in
+  `audit/2026-10-22/security-report.md`.
 
 ## Run it on your computer
 
@@ -44,7 +48,7 @@ Open http://localhost:3456. The first account you create is the owner; after tha
 the owner adds under **Settings → People** can join. To see it with made-up example orders, stop the app and run
 `pnpm db:seed:examples`, then `pnpm start` again.
 
-To start from one episode's version: `git checkout ep01-built`.
+To start from one episode's version: `git checkout ep01-built` (or another tag above).
 
 ## What it is and isn't
 
@@ -57,6 +61,11 @@ To start from one episode's version: `git checkout ep01-built`.
 
 - `data/.gitkeep` so a fresh clone has the database folder. Without it, `pnpm build` stopped with "Cannot open
   database because the directory does not exist" (found when we tested a fresh clone on 22 October 2026).
+
+- Episode 2 (security-scanner): security headers, a sign-in limit of 10 tries per 5 minutes, and a 10-character
+  minimum for new passwords. Trade-off we measured: the app can't tell people apart when nothing sits in front of it,
+  so all sign-ins share one counter. Ten wrong tries by anyone locked out every sign-in, the owner's too, for 5
+  minutes. Before putting it online behind a proxy, set Better Auth's `advanced.ipAddress.ipAddressHeaders`.
 
 ## Licence
 

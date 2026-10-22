@@ -12,7 +12,14 @@ import { ROLES, ADMIN_ROLE, DEFAULT_ROLE } from "./roles";
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   database: drizzleAdapter(db, { provider: "sqlite" }),
-  emailAndPassword: { enabled: true },
+  emailAndPassword: { enabled: true, minPasswordLength: 10 },
+  // Off by default outside production, and the built-in sign-in rule (3 tries per 10
+  // seconds) lets a patient guesser try ~18 passwords a minute all day. 10 tries per
+  // 5 minutes is plenty for a person who mistypes.
+  rateLimit: {
+    enabled: true,
+    customRules: { "/sign-in/email": { window: 300, max: 10 } },
+  },
   // freshAge 0: by default a session older than a day is "not fresh" and the devices
   // list answers 403 for anyone who has been signed in since yesterday. Deleting an
   // account asks for the password instead. Leave this at 0.

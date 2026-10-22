@@ -38,7 +38,7 @@ export function ChangePasswordForm() {
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="next">New password</Label>
-        <Input id="next" name="next" type="password" autoComplete="new-password" minLength={8} required />
+        <Input id="next" name="next" type="password" autoComplete="new-password" minLength={10} required />
       </div>
       <label className="flex min-h-11 cursor-pointer items-center gap-3">
         <input type="checkbox" name="others" defaultChecked className="size-5 accent-primary" />
