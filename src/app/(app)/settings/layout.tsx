@@ -9,19 +9,19 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   return (
     <div className="flex flex-col gap-8 md:flex-row">
       <nav className="flex gap-5 overflow-x-auto md:w-44 md:flex-col md:gap-1" aria-label="Settings">
-        <Link href="/settings" className="py-2 font-medium">
+        <Link href="/settings" className="flex min-h-11 min-w-11 items-center font-medium active:bg-muted">
           You
         </Link>
-        <Link href="/settings/security" className="py-2 font-medium">
+        <Link href="/settings/security" className="flex min-h-11 items-center font-medium active:bg-muted">
           Password and devices
         </Link>
         {isOwner && (
-          <Link href="/settings/people" className="py-2 font-medium">
+          <Link href="/settings/people" className="flex min-h-11 items-center font-medium active:bg-muted">
             People
           </Link>
         )}
         {isOwner && (
-          <Link href="/settings/system" className="py-2 font-medium">
+          <Link href="/settings/system" className="flex min-h-11 items-center font-medium active:bg-muted">
             System
           </Link>
         )}

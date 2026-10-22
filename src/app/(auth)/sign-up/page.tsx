@@ -51,7 +51,7 @@ export default async function SignUpPage() {
       <h2 className="mb-3 text-2xl">Sign-up is closed</h2>
       <p>The owner adds new people from inside the app. Ask them to add you.</p>
       <p className="mt-6">
-        <Link href="/sign-in" className="underline underline-offset-4">
+        <Link href="/sign-in" className="inline-flex min-h-11 items-center underline underline-offset-4">
           Back to sign in
         </Link>
       </p>

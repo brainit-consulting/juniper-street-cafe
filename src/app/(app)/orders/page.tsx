@@ -68,7 +68,7 @@ export default async function AllOrdersPage({
               href={href(f.key)}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "border-b-2 py-2 font-medium",
+                "inline-flex min-h-11 min-w-11 items-center justify-center border-b-2 font-medium",
                 active ? "border-primary" : "border-transparent text-muted-foreground",
               )}
             >

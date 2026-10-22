@@ -56,6 +56,15 @@
   --radius: 0.25rem;
 }
 
+/* A phone held sideways: wide, but only about 390px tall. Width queries miss it. */
+@custom-variant short-landscape (@media (max-height: 500px) and (orientation: landscape));
+
+/* The 16px side gutter, widened when the notch or Dynamic Island sits in it (iPhone landscape). */
+@utility gutter {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -67,6 +76,7 @@
   }
   html {
     @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
   }
   h1,
   h2,

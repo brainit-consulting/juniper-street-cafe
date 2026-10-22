@@ -71,7 +71,7 @@ export function HelpGuide({ chapters }: { chapters: HelpChapter[] }) {
       </Button>
 
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="overflow-y-auto data-[side=right]:w-full data-[side=right]:sm:max-w-lg">
+        <SheetContent side="right" className="overflow-y-auto pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] data-[side=right]:w-full data-[side=right]:sm:max-w-lg">
           <SheetHeader>
             <SheetTitle className="text-2xl">How this works</SheetTitle>
             <SheetDescription>Short answers for the people who use the order book.</SheetDescription>

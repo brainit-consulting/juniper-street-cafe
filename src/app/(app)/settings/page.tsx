@@ -28,7 +28,7 @@ export default async function YouPage() {
         <a
           href="/settings/export"
           download
-          className="mt-3 inline-block font-medium underline underline-offset-4"
+          className="mt-1 inline-flex min-h-11 items-center font-medium underline underline-offset-4"
         >
           Download my data
         </a>
@@ -37,7 +37,7 @@ export default async function YouPage() {
       <section>
         <h2 className="text-2xl">What the order book stores</h2>
         <p className="mt-2 max-w-prose">What is kept about orders and about you, and who can see it.</p>
-        <Link href="/privacy" className="mt-3 inline-block font-medium underline underline-offset-4">
+        <Link href="/privacy" className="mt-1 inline-flex min-h-11 items-center font-medium underline underline-offset-4">
           Read what this stores
         </Link>
       </section>

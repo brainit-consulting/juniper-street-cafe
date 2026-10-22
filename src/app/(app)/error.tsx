@@ -19,7 +19,7 @@ export default function AppError({ retry }: { error: unknown; retry: () => void 
         >
           Try again
         </button>
-        <Link href="/" className="font-medium underline underline-offset-4">
+        <Link href="/" className="inline-flex min-h-11 items-center font-medium underline underline-offset-4">
           Back to coming up
         </Link>
       </div>

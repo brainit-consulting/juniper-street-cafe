@@ -33,7 +33,7 @@ export function OrderRow({
     <li className="border-b border-border">
       <Link
         href={`/orders/${order.id}`}
-        className={`grid min-h-14 grid-cols-[3.25rem_1fr] gap-x-3 py-4 ${rule}`}
+        className={`grid min-h-14 grid-cols-[3.25rem_1fr] gap-x-3 py-4 active:bg-muted ${rule}`}
       >
         <div className="text-center leading-none">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

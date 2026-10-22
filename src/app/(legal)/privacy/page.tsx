@@ -68,7 +68,7 @@ export default function PrivacyPage() {
 
       <h2>Questions</h2>
       <p>
-        Ask {legal.contactEmail ? <a href={`mailto:${legal.contactEmail}`}>{legal.contactEmail}</a> : <Blank field="contactEmail" />}.
+        Ask {legal.contactEmail ? <a href={`mailto:${legal.contactEmail}`} className="py-3.5">{legal.contactEmail}</a> : <Blank field="contactEmail" />}.
       </p>
     </>
   );

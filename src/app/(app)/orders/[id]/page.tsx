@@ -18,7 +18,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-xl">
-      <Link href="/" className="text-muted-foreground underline underline-offset-4">
+      <Link href="/" className="inline-flex min-h-11 items-center text-muted-foreground underline underline-offset-4">
         Back to coming up
       </Link>
       <h1 className="mt-3 text-4xl">{order.customerName}</h1>

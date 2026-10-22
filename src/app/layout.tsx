@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Albert_Sans, Young_Serif } from "next/font/google";
 import { site, siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   // Private tool: keep it out of search results. Also change src/app/robots.ts if this ever goes public.
   robots: { index: false, follow: false },
 };
+
+// Edge to edge on iPhone; the .gutter class keeps text out from under the notch in landscape.
+export const viewport: Viewport = { viewportFit: "cover" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

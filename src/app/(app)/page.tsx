@@ -53,7 +53,7 @@ export default async function ComingUpPage() {
       {coming.length === 0 ? (
         <p className="mt-10 max-w-prose text-lg">
           No orders coming up. Add one when the phone rings.{" "}
-          <Link href="/?help=add-an-order" className="underline underline-offset-4">
+          <Link href="/?help=add-an-order" className="py-3.5 underline underline-offset-4">
             How taking an order works
           </Link>
         </p>

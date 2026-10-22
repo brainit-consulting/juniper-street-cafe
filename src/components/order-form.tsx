@@ -142,7 +142,7 @@ export function OrderForm({ initial, submitLabel }: { initial: OrderFormValues; 
       <FieldError message={errors.form} />
       {state.signedOut && (
         <p>
-          <a href="/sign-in" target="_blank" rel="noopener" className="font-medium underline underline-offset-4">
+          <a href="/sign-in" target="_blank" rel="noopener" className="inline-flex min-h-11 items-center font-medium underline underline-offset-4">
             Sign in (opens in a new tab)
           </a>
         </p>

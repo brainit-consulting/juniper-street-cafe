@@ -13,8 +13,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-[100dvh]">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-3">
-          <Link href="/" className="font-display text-xl">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-6 gap-y-1 py-1 gutter">
+          <Link href="/" className="inline-flex min-h-11 items-center font-display text-xl active:bg-muted">
             Juniper Street Café
           </Link>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -25,19 +25,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </Suspense>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-3xl gap-6 px-4 pb-2 font-medium" aria-label="Main">
-          <Link href="/" className="py-2">
+        <nav className="mx-auto flex max-w-3xl gap-6 pb-1 font-medium gutter" aria-label="Main">
+          <Link href="/" className="inline-flex min-h-11 items-center active:bg-muted">
             Coming up
           </Link>
-          <Link href="/orders" className="py-2">
+          <Link href="/orders" className="inline-flex min-h-11 items-center active:bg-muted">
             All orders
           </Link>
-          <Link href="/settings" className="py-2">
+          <Link href="/settings" className="inline-flex min-h-11 items-center active:bg-muted">
             Settings
           </Link>
         </nav>
       </header>
-      <main className="mx-auto max-w-3xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-3xl py-8 gutter">{children}</main>
     </div>
   );
 }

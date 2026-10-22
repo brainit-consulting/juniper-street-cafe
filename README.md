@@ -20,6 +20,7 @@ Each episode's finished state has a tag:
 - `ep02-secured`: after the security-scanner skill's report and its two fixes (episode 2). The report is in
   `audit/2026-10-22/security-report.md`.
 - `ep03-healthy`: after the app-health-check skill's report (`audit/2026-10-22.md`) and its fixes (episode 3).
+- `ep04-polished`: after the mobile-web-polish skill's changes for iPhone and iPad (episode 4).
 
 ## Run it on your computer
 
@@ -69,6 +70,9 @@ To start from one episode's version: `git checkout ep01-built` (or another tag a
 - Episode 3 (app-health-check): a half-typed order is kept when the session ends (it used to show "This page
   couldn't load" and lose the order), an error page, the privacy contact address (made up), and sign-in pages that
   send a signed-in person home.
+- Episode 4 (mobile-web-polish): form fields stay 16px on iPad so Safari doesn't zoom, notch-safe side padding
+  (`viewport-fit=cover`), every tap target at least 44px, a shorter sign-in page in phone landscape, and pressed
+  states. Measured in Chromium at phone and tablet sizes; not yet tried on a real iPhone.
 
 ## Licence
 
